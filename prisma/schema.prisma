@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum Role {
+  USER
+  ADMIN
+  KURIR
+}
+
+model User {
+  id_user      Int       @id @default(autoincrement())
+  nama         String
+  email        String    @unique
+  no_telp      String
+  alamat       String
+  username     String    @unique
+  password     String
+  foto_profil  String?
+  role         Role      @default(USER)
+  created_at   DateTime  @default(now())
+  orders       Order[]
+  ulasan       Ulasan[]
+  notifikasi   Notifikasi[]
+}
+
+model Admin {
+  id_admin    Int    @id @default(autoincrement())
+  nama_admin  String
+  email       String @unique
+  username    String @unique
+  password    String
+}
+
+model Kurir {
+  id_kurir      Int       @id @default(autoincrement())
+  nama_kurir    String
+  no_telp       String
+  email         String    @unique
+  username      String    @unique
+  password      String
+  status_kurir  String    @default("tersedia") // tersedia, sibuk, offline
+  orders        Order[]
+}
+
+model Layanan {
+  id_layanan    Int       @id @default(autoincrement())
+  nama_layanan  String
+  deskripsi     String
+  harga_per_kg  Float
+  estimasi_hari Int
+  foto_layanan  String?
+  orders        Order[]
+}
+
+model Order {
+  id_order         Int       @id @default(autoincrement())
+  id_user          Int
+  id_layanan       Int
+  id_kurir         Int?
+  kode_order       String    @unique
+  berat_kg        Float     @default(0)
+  subtotal         Float     @default(0)
+  ongkir           Float     @default(0)
+  kode_promo       String?
+  diskon           Float     @default(0)
+  total_bayar      Float     @default(0)
+  alamat_pickup    String
+  alamat_delivery  String
+  tanggal_pickup   DateTime
+  jam_pickup       String
+  catatan          String?
+  status_order     String    @default("menunggu pickup") // dijemput kurir, sedang dicuci, sedang disetrika, selesai, diantar, selesai diterima
+  created_at       DateTime  @default(now())
+  
+  user             User      @relation(fields: [id_user], references: [id_user])
+  layanan          Layanan   @relation(fields: [id_layanan], references: [id_layanan])
+  kurir            Kurir?    @relation(fields: [id_kurir], references: [id_kurir])
+  pembayaran       Pembayaran?
+  tracking         Tracking[]
+  ulasan           Ulasan[]
+}
+
+model Pembayaran {
+  id_pembayaran     Int       @id @default(autoincrement())
+  id_order          Int       @unique
+  metode_pembayaran String
+  jumlah            Float
+  bukti_transfer    String?
+  status_pembayaran String    @default("belum bayar") // sudah bayar, verifikasi, ditolak
+  tanggal_bayar     DateTime?
+  
+  order             Order     @relation(fields: [id_order], references: [id_order])
+}
+
+model Tracking {
+  id_tracking     Int       @id @default(autoincrement())
+  id_order        Int
+  status_tracking String
+  waktu_update    DateTime  @default(now())
+  keterangan      String?
+  
+  order           Order     @relation(fields: [id_order], references: [id_order])
+}
+
+model Ulasan {
+  id_ulasan      Int       @id @default(autoincrement())
+  id_user        Int
+  id_order       Int
+  rating         Int
+  komentar       String
+  tanggal_ulasan DateTime  @default(now())
+  
+  user           User      @relation(fields: [id_user], references: [id_user])
+  order          Order     @relation(fields: [id_order], references: [id_order])
+}
+
+model Notifikasi {
+  id_notifikasi  Int       @id @default(autoincrement())
+  id_user        Int
+  judul          String
+  pesan          String
+  status_baca    Boolean   @default(false)
+  created_at     DateTime  @default(now())
+  
+  user           User      @relation(fields: [id_user], references: [id_user])
+}
+
+model Promo {
+  id_promo         Int       @id @default(autoincrement())
+  kode_promo       String    @unique
+  diskon           Float
+  tanggal_mulai    DateTime
+  tanggal_berakhir  DateTime
+  status_promo     Boolean   @default(true)
+}
+
+// ─── Kurir Lokasi (untuk Maps Realtime) ───────────────────────────────────
+model KurirLokasi {
+  id          Int       @id @default(autoincrement())
+  id_kurir    Int       @unique   // 1 row per kurir, upsert on update
+  latitude    Float
+  longitude   Float
+  id_order    Int?                // order yang sedang ditangani (opsional)
+  updated_at  DateTime  @default(now())
+}
+
+// ─── Mitra Laundry (untuk Location Based Service / LBS) ───────────────────
+model MitraLaundry {
+  id            Int     @id @default(autoincrement())
+  nama_laundry  String
+  alamat        String
+  latitude      Float
+  longitude     Float
+  harga_per_kg  Float
+  status_aktif  Boolean @default(true)
+}

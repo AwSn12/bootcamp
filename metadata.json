@@ -1,0 +1,14 @@
+{
+  "name": "LAUNDRYKU",
+  "description": "Sistem informasi laundry modern berbasis web dan mobile responsive dengan fitur tracking order, manajemen kurir, dan pembayaran online.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "Authentication",
+    "Database Management",
+    "Real-time Tracking",
+    "Online Payment Integration"
+  ]
+}
