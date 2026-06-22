@@ -1,6 +1,7 @@
 // const String baseUrl = 'http://10.0.2.2:3000'; // Android emulator → localhost
 // const String baseUrl = 'http://localhost:3000'; // Web/desktop
-const String baseUrl = 'http://10.211.39.146:3000'; // Fisik device, ganti dengan IP komputer
+// const String baseUrl = 'http://10.211.39.146:3000'; // Fisik device, ganti dengan IP komputer
+const String baseUrl = 'https://bootcamp-production-c1fe.up.railway.app';
 
 class ApiEndpoints {
   // AUTH

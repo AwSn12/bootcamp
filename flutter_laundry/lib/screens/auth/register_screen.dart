@@ -192,20 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               validator: (v) => (v?.length ?? 0) < 6 ? 'Min. 6 karakter' : null,
                             ),
                             const SizedBox(height: 16),
-                            DropdownButtonFormField<String>(
-                              value: _selectedRole,
-                              decoration: const InputDecoration(
-                                labelText: 'DAFTAR SEBAGAI',
-                                prefixIcon: Icon(Icons.badge_outlined, color: AppTheme.textLight),
-                              ),
-                              items: const [
-                                DropdownMenuItem(value: 'USER', child: Text('Pelanggan (User)')),
-                                DropdownMenuItem(value: 'KURIR', child: Text('Mitra Kurir')),
-                              ],
-                              onChanged: (val) {
-                                if (val != null) setState(() => _selectedRole = val);
-                              },
-                            ),
+                            const SizedBox(height: 8),
                             const SizedBox(height: 24),
                             SizedBox(
                               width: double.infinity,
